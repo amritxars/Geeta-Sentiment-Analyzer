@@ -383,6 +383,57 @@ elif st.session_state.step == len(QUESTIONS) + 1:
     matching["score"] = matching.apply(relevance_score, axis=1)
     top_verses = matching.sort_values("score", ascending=False).head(5)
 
+    # ── Overall Summary ───────────────────────────────────────────────────────
+    OVERALL_SUMMARIES = {
+        "sad": (
+            "The Bhagavad Gita meets you in your grief with deep compassion. "
+            "It reminds you that the soul is eternal and that no loss is truly final. "
+            "Krishna teaches that suffering, while real, is also temporary — like clouds passing across an unchanging sky. "
+            "The verses recommended for you speak of finding inner strength precisely when outer circumstances feel unbearable. "
+            "You are not broken — you are being refined."
+        ),
+        "anxious": (
+            "The Gita understands the restless, worried mind better than almost any other text. "
+            "It teaches that most of our anxiety comes from trying to control outcomes that were never fully ours to control. "
+            "The verses chosen for you gently redirect your focus — from the fruits of action to the quality of action itself. "
+            "Krishna's core message to the anxious soul is this: do your best, surrender the rest. "
+            "Peace is not found by resolving every uncertainty — it is found by trusting the process."
+        ),
+        "angry": (
+            "The Gita does not judge your anger — it explains it. "
+            "It traces fury back to its root: unfulfilled desire and wounded expectation. "
+            "The verses here invite you to look beneath the anger and ask what you are truly protecting. "
+            "Krishna teaches that uncontrolled anger destroys the very person who carries it. "
+            "True strength is not the absence of fire — it is the wisdom to direct that fire constructively."
+        ),
+        "happy": (
+            "The Gita celebrates your joy and invites you to deepen it into something unshakeable. "
+            "Worldly happiness is beautiful, but it depends on circumstances that can change. "
+            "The verses selected for you point toward a joy that is not borrowed from outside — one that lives within. "
+            "Krishna calls this Ananda — bliss that is self-sustaining, needing no external cause. "
+            "Use this moment of lightness to go inward and plant the seeds of lasting peace."
+        ),
+        "neutral": (
+            "A calm and seeking mind is the ideal student of the Gita. "
+            "You are in a reflective space — neither pulled by crisis nor blinded by euphoria. "
+            "The verses recommended for you speak of duty, wisdom, and the art of living with purpose. "
+            "Krishna's teachings are most clearly received when the mind is still, just as yours is now. "
+            "This is an excellent time to absorb the Gita's deeper lessons and let them guide your choices."
+        ),
+    }
+
+    overall = OVERALL_SUMMARIES.get(predicted_emotion, "")
+    if overall:
+        st.markdown(
+            f'<div style="background:linear-gradient(135deg,#1a1006,#221408);'
+            f'border:1px solid rgba(232,132,26,0.4);border-radius:12px;padding:1.4rem 1.6rem;margin-bottom:1.2rem;">'
+            f'<div style="color:#E8841A;font-size:0.75rem;font-weight:bold;letter-spacing:1.5px;'
+            f'text-transform:uppercase;margin-bottom:0.6rem;">🪔 What the Gita Says to You</div>'
+            f'<div style="color:#EDE0CC;font-size:0.93rem;line-height:1.85;">{overall}</div>'
+            f'</div>',
+            unsafe_allow_html=True
+        )
+
     for _, row in top_verses.iterrows():
         verse_id = f"Chapter {row['chapter']}, Verse {row['verse']}"
         transliteration = str(row.get('transliteration', ''))[:120]
