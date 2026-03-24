@@ -385,32 +385,28 @@ elif st.session_state.step == len(QUESTIONS) + 1:
 
     for _, row in top_verses.iterrows():
         verse_id = f"Chapter {row['chapter']}, Verse {row['verse']}"
-        summary = get_verse_summary(row['chapter'], row['verse'])
-        summary_html = ""
-        if summary:
-            summary_html = f"""
-            <div class="verse-summary">
-                <div class="summary-label">📝 Summary</div>
-                {summary}
-            </div>"""
-        else:
-            # Fallback: use first 3 sentences of the translation as summary
-            sentences = re.split(r'(?<=[.!?]) +', str(row['translation']))
-            fallback = " ".join(sentences[:3])
-            summary_html = f"""
-            <div class="verse-summary">
-                <div class="summary-label">📝 Summary</div>
-                {fallback} This verse encourages reflection on one's inner state and the path toward balance and wisdom as taught in the Bhagavad Gita.
-            </div>"""
+        transliteration = str(row.get('transliteration', ''))[:120]
+        translation = str(row['translation'])
 
-        st.markdown(f"""
-        <div class="verse-card">
-            <div class="verse-id">🕉️ {verse_id}</div>
-            <div class="verse-sanskrit">{str(row.get('transliteration', ''))[:120]}...</div>
-            <div class="verse-translation">{row['translation']}</div>
-            {summary_html}
-        </div>
-        """, unsafe_allow_html=True)
+        # Get summary
+        summary = get_verse_summary(int(row['chapter']), int(row['verse']))
+        if not summary:
+            sentences = re.split(r'(?<=[.!?]) +', translation)
+            summary = " ".join(sentences[:3]) + " This verse encourages reflection on one's inner state and the path toward balance and wisdom as taught in the Bhagavad Gita."
+
+        # Render card and summary as one clean HTML block
+        html = (
+            '<div class="verse-card">'
+            f'<div class="verse-id">🕉️ {verse_id}</div>'
+            f'<div class="verse-sanskrit">{transliteration}...</div>'
+            f'<div class="verse-translation">{translation}</div>'
+            '<div class="verse-summary">'
+            '<div class="summary-label">📝 Summary</div>'
+            f'{summary}'
+            '</div>'
+            '</div>'
+        )
+        st.markdown(html, unsafe_allow_html=True)
 
     st.markdown('<hr class="divider">', unsafe_allow_html=True)
 
